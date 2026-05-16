@@ -1,4 +1,4 @@
-program Integrals;
+program LinkedLists;
 uses Crt;
 
 type
@@ -11,93 +11,102 @@ type
 
 var
   current, run: integer;
-  i, j, v, len: integer;
+  i, j, k, v, len: integer;
   key: char;
-  m, head, back: PNode;
+  empty, head, back: PNode;
 
 const
-  SIZE: integer = 1024;
-  N: integer = 7;
-  list: array[0..6] of string = ('Push back', 'Pop back', 'Push front', 'Pop front', 'Count', 'Print', 'Exit');
+  N: integer = 5;
+  list: array[0..4] of string = ('Push', 'Pop', 'Count', 'Print', 'Exit');
 
-procedure pushBack;
-var new: PNode;
+procedure push;
+var new, index: PNode;
 begin
   ClrScr;
 
   write('Value: ');
   readln(v);
 
-  if back = nil then begin
+  if head = nil then begin
+    head := empty;
     head^.value := v;
     head^.next := nil;
     head^.prev := nil;
-
-    new := head;
+    back := head;
   end else begin
-    new := back + 1;
+    write('Index: ');
+    readln(k);
+
+    if (k < 0) or (k > len) then begin
+      writeln('Index is out of range 0..', len);
+      ReadKey;
+      Exit;
+    end;
+
+    new := empty;
     new^.value := v;
-    new^.next := nil;
-    new^.prev := back;
-
-    back^.next := new;
-  end;
-
-  back := new;
-  inc(len);
-end;
-
-procedure popBack;
-begin
-  ClrScr;
-
-  if back = nil then exit;
-
-  if head <> back then begin
-    back := back^.prev;
-    back^.next := nil;
-  end else back := nil;
-
-  dec(len);
-end;
-
-procedure pushFront;
-var new: PNode;
-begin
-  ClrScr;
-
-  write('Value: ');
-  readln(v);
-
-  if back = nil then begin
-    head^.value := v;
-    head^.next := nil;
-    head^.prev := nil;
-
-    new := head;
-  end else begin
-    new := head - 1;
-    new^.value := v;
-    new^.next := head;
     new^.prev := nil;
+    new^.next := nil;
 
-    head^.prev := new;
+    if k = 0 then begin
+      new^.next := head;
+      head^.prev := new;
+      head := new;
+    end else if k = len then begin
+      back^.next := new;
+      new^.prev := back;
+      back := new;
+    end else begin
+      index := head;
+      for j := 0 to k-2 do begin
+        index := index^.next;
+      end;
+
+      new^.next := index^.next;
+      new^.prev := index;
+      if index^.next <> nil then index^.next^.prev := new;
+      index^.next := new;
+    end;
   end;
 
-  head := new;
+  GetMem(empty, 1);
   inc(len);
 end;
 
-procedure popFront;
+procedure pop;
+var index: PNode;
 begin
   ClrScr;
 
-  if back = nil then exit;
+  if head = nil then exit;
 
-  if head <> back then begin
-    head := head^.next;
-    head^.prev := nil;
-  end else back := nil;
+  if len = 1 then head := nil
+  else begin
+    write('Index: ');
+    readln(k);
+
+    if (k < 0) or (k >= len) then begin
+      writeln('Index is out of range 0..', len);
+      ReadKey;
+      Exit;
+    end;
+
+    if k = 0 then begin
+      head := head^.next;
+      head^.prev := nil;
+    end else if k = len - 1 then begin
+      back := back^.prev;
+      head^.next := nil;
+    end else begin
+      index := head;
+      for j := 0 to k-1 do begin
+        index := index^.next;
+      end;
+
+      index^.prev^.next := index^.next;
+      index^.next^.prev := index^.prev;
+    end;
+  end;
 
   dec(len);
 end;
@@ -107,21 +116,19 @@ var point: PNode;
 begin
   ClrScr;
 
-  if back = nil then exit;
+  if head = nil then exit;
 
   writeln('Values: ');
-  if head = back then begin
+  if len = 1 then begin
     write(head^.value);
     exit;
   end;
 
   write(head^.value);
   point := head;
-  j := 1;
   while point^.next <> nil do begin
-    point := head + j;
+    point := point^.next;
     write(' <-> ', point^.value);
-    j += 1;
   end;
 
 end;
@@ -130,9 +137,8 @@ begin
   ClrScr;
 
   run := 1;
-  GetMem(m, SIZE);
-  head := m + SIZE div 2;
-  back := nil;
+  GetMem(empty, 1);
+  head := nil;
 
   current := 0;
   while run <> 0 do begin
@@ -151,19 +157,17 @@ begin
         writeln();
 
         case current of
-          0: pushBack;
-          1: popBack;
-          2: pushFront;
-          3: popFront;
-          4: begin
+          0: push;
+          1: pop;
+          2: begin
             writeln('Queue lenght: ', len);
             ReadKey;
           end;
-          5: begin
+          3: begin
             printValues;
             if len <> 0 then ReadKey;
           end;
-          6: run := 0;
+          4: run := 0;
         end;
       end;
     end;
