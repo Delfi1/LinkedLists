@@ -16,8 +16,8 @@ var
   empty, head, back: PNode;
 
 const
-  N: integer = 5;
-  list: array[0..4] of string = ('Push', 'Pop', 'Count', 'Print', 'Exit');
+  N: integer = 3;
+  list: array[0..2] of string = ('Push', 'Pop', 'Exit');
 
 procedure push;
 var new, index: PNode;
@@ -115,6 +115,7 @@ procedure printValues;
 var point: PNode;
 begin
   ClrScr;
+  writeln('Queue lenght: ', len);
 
   if head = nil then exit;
 
@@ -131,6 +132,7 @@ begin
     write(' <-> ', point^.value);
   end;
 
+  writeln;
 end;
 
 begin
@@ -142,7 +144,10 @@ begin
 
   current := 0;
   while run <> 0 do begin
-    ClrScr;
+    printValues;
+    writeln;
+    writeln('-----------------------------------------------');
+    writeln;
 
     for i := 0 to N-1 do begin
       if i = current then write('--> ');
@@ -159,15 +164,7 @@ begin
         case current of
           0: push;
           1: pop;
-          2: begin
-            writeln('Queue lenght: ', len);
-            ReadKey;
-          end;
-          3: begin
-            printValues;
-            if len <> 0 then ReadKey;
-          end;
-          4: run := 0;
+          2: run := 0;
         end;
       end;
     end;
