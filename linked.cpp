@@ -16,6 +16,27 @@ public:
   }
 };
 
+class Iterator {
+public:
+    Node* ptr;
+
+    Iterator(Node* ptr) {
+        this->ptr = ptr;
+    }
+
+    void next() {
+        this->ptr = this->ptr->next;
+    }
+
+    int get() {
+        return this->ptr->data;
+    }
+
+    bool is_finished() {
+        return this->ptr == nullptr;
+    }
+};
+
 class LinkedList {
 public:
     Node* head;
@@ -105,10 +126,12 @@ public:
         if (len == 1) {
             head = nullptr;
             back = nullptr;
+            len--;
             return;
         }
 
         head = head->next;
+        head->prev = nullptr;
         len--;
     }
 
@@ -118,10 +141,12 @@ public:
         if (len == 1) {
             head = nullptr;
             back = nullptr;
+            len--;
             return;
         }
 
         back = back->prev;
+        back->next = nullptr;
         len--;
     }
 
@@ -152,20 +177,6 @@ public:
         node->next->prev = node->prev;
 
         len--;
-    }
-
-    int get(int index) {
-        if (index < 0 || index >= len) {
-            printf("Index is out of range 0..%d\n", len - 1);
-            return 0;
-        }
-
-        Node* node = this->head;
-        for (int j=1; j <= index; j++) {
-            node = node->next;
-        }
-
-        return node->data;
     }
 
     int lenght() {
@@ -241,7 +252,10 @@ extern "C"
     __declspec(dllexport) void popHead(LinkedList *self) { self->popHead(); }
     __declspec(dllexport) void popBack(LinkedList *self) { self->popBack(); }
     __declspec(dllexport) void pop(LinkedList *self, int index) { self->pop(index); }
-
     __declspec(dllexport) int lenght(LinkedList *self) { return self->lenght(); }
-    __declspec(dllexport) int get(LinkedList *self, int index) { return self->get(index); }
+
+    __declspec(dllexport) Iterator* iter(LinkedList *self) { return new Iterator(self->head); }
+    __declspec(dllexport) void next(Iterator *self) { return self->next(); }
+    __declspec(dllexport) bool is_finished(Iterator *self) { return self->is_finished(); }
+    __declspec(dllexport) int get(Iterator *self) { return self->get(); }
 }
