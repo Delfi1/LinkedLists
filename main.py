@@ -89,17 +89,28 @@ def render():
     canv.delete("all")
 
     c = current()
+    l = len(c)
+
+    node_w = NODE_W
+    node_h = NODE_H
+    d = D
+    if l > MXW:
+        scale = MXW / l
+        node_w *= scale
+        node_h *= scale
+        d *= scale
+
     for i, v in enumerate(c.iter()):
-        x1 = X0 + i * (NODE_W + D)
-        y1 = Y0 - NODE_H / 2
-        x2 = x1 + NODE_W
-        y2 = y1 + NODE_H
+        x1 = X0 + i * (node_w + d)
+        y1 = Y0 - node_h / 2
+        x2 = x1 + node_w
+        y2 = y1 + node_w
 
         canv.create_rectangle(
             x1, y1, x2, y2, fill="#e1f5fe", outline="#0288d1", width=2
         )
 
-        canv.create_text(x1 + NODE_W / 2, Y0, text=v)
+        canv.create_text(x1 + node_w / 2, y1 + node_h, text=v, anchor="center")
 
 
 def on_selected():
