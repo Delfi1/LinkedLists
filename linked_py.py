@@ -50,7 +50,7 @@ class PyLinkedList:
 
         new = Node(value)
         new.next = node.next
-        new.prev = node.prev
+        new.prev = node
         if node.next is not None:
             node.next.prev = new
         node.next = new
@@ -102,7 +102,7 @@ class PyLinkedList:
             return
 
         node = self.head
-        for _ in range(1, index):
+        for _ in range(1, index + 1):
             node = node.next
 
         node.prev.next = node.next
